@@ -1,20 +1,22 @@
 import string
 import os
+import keyboard
 
 #creates an alphabet containing every lowercase ascii character
 ALPHABET = string.ascii_lowercase
+FRENCH_ALPHABET = "abcdefghijklmnopqrstuvwxyzéèàùêâîôûçëïüÿäö"
 
 def display():
     """
     Displays the name of the script and the credits :p.
     """
     
-    logo = """ _____                            
-/  __ \                           
-| /  \/ __ _  ___  ___  __ _ _ __ 
-| |    / _` |/ _ \/ __|/ _` | '__|
-| \__/\ (_| |  __/\__ \ (_| | |   
-\____/ \__,_|\___||___/\__,_|_|   
+    logo = """ _____                          _____           _ 
+/  __ \                        |_   _|         | |
+| /  \/ __ _  ___  ___  __ _ _ __| | ___   ___ | |
+| |    / _` |/ _ \/ __|/ _` | '__| |/ _ \ / _ \| |
+| \__/\ (_| |  __/\__ \ (_| | |  | | (_) | (_) | |
+\_____/\__,_|\___||___/\__,_|_|  \_/\___/ \___/|_|
 
 """
     credits = "made by @noValve\n\n"
@@ -40,7 +42,8 @@ def cipher(message, shift):
     
     result = ""
     for letter in message:
-        result+=ALPHABET[(ALPHABET.find(letter.lower())+shift)%len(ALPHABET)]
+        result+= ALPHABET[(ALPHABET.find(letter)+shift)%len(ALPHABET)] if letter in ALPHABET else letter
+        #result+=ALPHABET[(ALPHABET.find(letter.lower())+shift)%len(ALPHABET)]
     return result
 
 def decipher(message, shift):
@@ -62,18 +65,45 @@ def decipher_bruteforce(message):
 
     Args:
         message (string): The ciphered message.
+    
+    Returns:
+        string: The deciphered message with every possible shift.
     """
+    result = ""
     for i in range(len(ALPHABET)):
-        print("Shift " + str(i) + " : \t" + decipher(message, i), end="\n") 
+        result+="Shift " + str(i) + " : \t" + decipher(message, i) + "\n" 
+    return result
         
 def parameters(choice):
-    if choice == "1":
-        clear_terminal()
-        display()
-        print("\nEnter the desired message: ", end=" ")
-        message = input()
-        print("\nEnter the desired shift: ", end=" ")
-        shift = input()
+    message = ""
+    shift = 0
+    match choice:
+        case "1":
+            clear_terminal()
+            display()
+            print("\n(for the ciphering to work better, don't use any special character)")
+            print("\nEnter the desired message: ", end=" ")
+            message = input()
+            print("\nEnter the desired shift: ", end=" ")
+            shift = input()
+            while(not shift.isdigit()):
+                print("\nPlease, enter a number: ", end=" ")
+                shift = input()
+        case "2":
+            clear_terminal()
+            display()
+            print("\nEnter the ciphered message: ", end=" ")
+            message = input()
+            print("\nEnter the shift: ", end=" ")
+            shift = input()
+            while(not shift.isdigit()):
+                print("\nPlease, enter a number: ", end=" ")
+                shift = input()
+        case "3":
+            clear_terminal()
+            display()
+            print("\nEnter the ciphered message: ", end=" ")
+            message = input()
     return message, int(shift)
     
     
@@ -82,7 +112,20 @@ def display_result(result):
     display()
     print("\nCiphered message: " + result)
     
+def wait_for_input():
+    """
+    Waits for the user to press enter.
+    """
+    print("\nPress [Enter] to continue.") 
+    input()
+            
 def menu():
+    """
+    Displays the menu and asks the user to choose an option.
+    
+    Returns:
+        string: the user's answer.
+    """
     clear_terminal()
     display()
     print("What do you wish to do?\n")
@@ -103,8 +146,19 @@ def main():
                 message, shift = parameters("1")
                 result = cipher(message, shift)
                 display_result(result)
-                print("\nPress [ENTER] to continue.")
-                input()
+                wait_for_input()
+            case "2":
+                message, shift = parameters("2")
+                result = decipher(message, shift)
+                display_result(result)
+                wait_for_input()
+            case "3":
+                message, shift = parameters("3")
+                result = decipher_bruteforce(message)
+                display_result(result)
+                wait_for_input()
+            case "4":
+                exit()
                 
         
     
